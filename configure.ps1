@@ -123,12 +123,11 @@ Disable-GameBarTips
 
 Write-BoxedText "Game Bar Tips have been disabled."
 Write-BoxedText "Disabling Windows Consumer Experience Features."
-Write-BoxedText "Disabling Open File Explorer to Quick Access."
-Write-BoxedText "Disabling Show Recent Files in Quick Access."
-Write-BoxedText "Disabling Show Frequent Folders in Quick Access." 
+# Write-BoxedText "Disabling Open File Explorer to Quick Access."
+# Write-BoxedText "Disabling Show Recent Files in Quick Access."
+# Write-BoxedText "Disabling Show Frequent Folders in Quick Access." 
 Write-BoxedText "Disabling Expand to Open Folder."
-Set-WindowsExplorerOptions -EnableShowHiddenFilesFoldersDrives -EnableShowFileExtensions -DisableOpenFileExplorerToQuickAccess -DisableShowRecentFilesInQuickAccess -DisableShowFrequentFoldersInQuickAccess 
-# -DisableExpandToOpenFolder
+Set-WindowsExplorerOptions -EnableShowHiddenFilesFoldersDrives -EnableShowFileExtensions  
 Write-BoxedText "Setting Taskbar size Large."
 Set-BoxstarterTaskbarOptions -Size Large 
 Write-BoxedText "Setting Taskbar Dock Bottom."
