@@ -127,7 +127,8 @@ Write-BoxedText "Disabling Open File Explorer to Quick Access."
 Write-BoxedText "Disabling Show Recent Files in Quick Access."
 Write-BoxedText "Disabling Show Frequent Folders in Quick Access." 
 Write-BoxedText "Disabling Expand to Open Folder."
-Set-WindowsExplorerOptions -EnableShowHiddenFilesFoldersDrives -EnableShowFileExtensions 
+Set-WindowsExplorerOptions -EnableShowHiddenFilesFoldersDrives -EnableShowFileExtensions -DisableOpenFileExplorerToQuickAccess -DisableShowRecentFilesInQuickAccess -DisableShowFrequentFoldersInQuickAccess 
+# -DisableExpandToOpenFolder
 Write-BoxedText "Setting Taskbar size Large."
 Set-BoxstarterTaskbarOptions -Size Large 
 Write-BoxedText "Setting Taskbar Dock Bottom."
@@ -157,10 +158,11 @@ reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager\"
 
 Write-BoxedText "Restoring the classic right-click context menu."
 reg add "HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" /f /ve
-# Set Mouse Hover Time for Taskbar to a very long time to prevent hover text
 
-Write-BoxedText "Setting Mouse Hover Time for Taskbar to a very long time to prevent hover text" 
+# Set Mouse Hover Time for Taskbar to a very long time to prevent hover text
+Write-BoxedText "Setting Mouse Hover Time for Taskbar to a very long time to delay hover text" 
 Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseHoverTime" -Value 10000
+
 # Set the registry value to show hidden files and folders for the current user
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "Hidden" -Value 1
 
@@ -276,9 +278,9 @@ choco install microsoft-vclibs-140-00 -y --force
 #-------------------------------------------------------------
 # Start App Cleanup Script to remove Junk Windows Apps
 #-------------------------------------------------------------
-Write-BoxedText "Starting App Cleanup Script and removing Junk Windows Apps"
-$scriptPath = "C:\prep\NewWindowsScripts\cleanupapps.ps1"
-Invoke-Expression -Command "powershell.exe -ExecutionPolicy Bypass -File `"$scriptPath`""
+# Write-BoxedText "Starting App Cleanup Script and removing Junk Windows Apps"
+# $scriptPath = "C:\prep\NewWindowsScripts\cleanupapps.ps1"
+# Invoke-Expression -Command "powershell.exe -ExecutionPolicy Bypass -File `"$scriptPath`""
 
 #-------------------------------------------------------------
 # Install VCLibs and XAML frameworks required by modern MSIX apps
@@ -342,8 +344,6 @@ Write-BoxedText "Framework installation complete."
 
 
 
-
-
 #-------------------------------------------------------------
 # Check for and Disable Hibernation
 #-------------------------------------------------------------
@@ -393,47 +393,6 @@ Write-BoxedText "Starting Chocolatey App Installer."
 
 C:\Python310\python.exe c:\prep\NewWindowsScripts\install_apps.py
 
-#-------------------------------------------------------------
-# Install .Net 3.5 (Netfx3) using PowerShell
-#-------------------------------------------------------------
-#-------------------------------------------------------------
-# Check for the presence of .NET 3.5 and install it if 
-# it's not already installed. Suppress Local Media Missing
-# error message.
-#-------------------------------------------------------------
-
-# Netfx3 is rarely needed now, so this section is commented out.
-# Uncomment if you need .NET 3.5 for legacy applications.
-# Or use the installer in Windows Features.
-
-# Write-BoxedText "Installing .NET 3.5 (Netfx3) using PowerShell."
-#$featureName = "NetFx3"
-# $sourcePath = "d:\sources\sxs"
-
-# Check if the feature is enabled
-# $feature = Get-WindowsOptionalFeature -Online | Where-Object { $_.FeatureName -eq $featureName }
-#
-#if ($feature -eq $null -or $feature.State -ne "Enabled") {
-#    try {
-#        # Try enabling the feature from local source
-#        $enableFeature = Enable-WindowsOptionalFeature -FeatureName $featureName -Online -All -Source $sourcePath -LimitAccess -ErrorAction Stop
-#        Write-BoxedText "Feature '$featureName' enabled."
-#    }
-#    catch {
-#        # Handle the error when local media is not found
-#        
-#        Write-BoxedText "Local Media not available: Checking for Online Source."
-#        
-#        # Try enabling the feature from online source
-#        Enable-WindowsOptionalFeature -FeatureName $featureName -Online -All
-#    }
-#} else {
-#    # Feature is already enabled
-#    
-#    Write-BoxedText "Feature '$featureName' is already enabled."
-#    
-#}
-
 
 #-------------------------------------------------------------
 # Add Boxstart Icon to the Default and the current User's Desktops
@@ -480,12 +439,12 @@ $ShortcutCurrentUser.Save()
 # that was created during the Boxstarter installation
 #-------------------------------------------------------------
 
-Write-BoxedText "Removing Boxstarter Shell shortcut from Public Desktop."
+# Write-BoxedText "Removing Boxstarter Shell shortcut from Public Desktop."
 
 
-if (Test-Path "C:\Users\Public\Desktop\Boxstarter Shell.lnk") { Remove-Item -Path "C:\Users\Public\Desktop\Boxstarter Shell.lnk" }
+# if (Test-Path "C:\Users\Public\Desktop\Boxstarter Shell.lnk") { Remove-Item -Path "C:\Users\Public\Desktop\Boxstarter Shell.lnk" }
 
-Write-BoxedText "Boxstarter Shell shortcut removed from Public Desktop."
+# Write-BoxedText "Boxstarter Shell shortcut removed from Public Desktop."
 
 
 #-------------------------------------------------------------
