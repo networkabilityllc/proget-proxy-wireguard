@@ -127,7 +127,7 @@ Write-BoxedText "Disabling Open File Explorer to Quick Access."
 Write-BoxedText "Disabling Show Recent Files in Quick Access."
 Write-BoxedText "Disabling Show Frequent Folders in Quick Access." 
 Write-BoxedText "Disabling Expand to Open Folder."
-Set-WindowsExplorerOptions -EnableShowHiddenFilesFoldersDrives -EnableShowFileExtensions -DisableOpenFileExplorerToQuickAccess -DisableShowRecentFilesInQuickAccess -DisableShowFrequentFoldersInQuickAccess -DisableExpandToOpenFolder
+Set-WindowsExplorerOptions -EnableShowHiddenFilesFoldersDrives -EnableShowFileExtensions 
 Write-BoxedText "Setting Taskbar size Large."
 Set-BoxstarterTaskbarOptions -Size Large 
 Write-BoxedText "Setting Taskbar Dock Bottom."
@@ -342,35 +342,6 @@ Write-BoxedText "Framework installation complete."
 
 
 
-#-------------------------------------------------------------
-# Uninstall Windows 11 Personal Teams
-#-------------------------------------------------------------
-
-Write-BoxedText "Uninstalling Windows 11 Personal Teams."
-
-Get-AppxPackage -Name MicrosoftTeams -AllUsers | Remove-AppxPackage -AllUsers -ErrorAction SilentlyContinue
-
-Write-BoxedText "Uninstalling Teams machine-wide installer."
-
-#-------------------------------------------------------------
-# Credit for code snippet to r/powershell on Reddit
-# https://www.reddit.com/r/PowerShell/comments/yqt1o0/making_a_script_to_uninstall_teams_for_all_users/
-#-------------------------------------------------------------
-
-$AppName = "Teams Machine-Wide Installer"
-$Process = "Teams*"
-ForEach ( $Architecture in "SOFTWARE", "SOFTWARE\Wow6432Node" ) { $UninstallKeys = "HKLM:$Architecture\Microsoft\Windows\CurrentVersion\Uninstall" 
-if (Test-path $UninstallKeys) { Write-Output "Checking for $AppName installation in $UninstallKeys" $GUID = Get-ItemProperty -Path "$UninstallKeys*" | Where-Object -FilterScript { $_.DisplayName -like $AppName } | Select-Object PSChildName -ExpandProperty PSChildName
-    If ( $GUID ) {
-        Write-Output "Stopping $AppName Processes"
-        Get-Process $Process | Stop-Process -Force
-        $GUID | ForEach-Object {
-            Write-Output "Uninstalling: $(( Get-ItemProperty "$UninstallKeys\$_" ).DisplayName) " 
-            Start-Process -Wait -FilePath "MsiExec.exe" -ArgumentList "/X$_ /qn /norestart"
-        }
-    }
-}
-}
 
 
 #-------------------------------------------------------------
