@@ -5,8 +5,8 @@
 # ------------------------------------------------------------
 
 $prepPath = 'C:\prep'
-$repoPath = 'C:\prep\NewWindowsScripts'
-$gitRepoUrl = 'https://github.com/networkabilityllc/NewWindowsScripts'
+$repoPath = 'C:\prep\proget-proxy-wireguard'
+$gitRepoUrl = 'https://github.com/networkabilityllc/proget-proxy-wireguard.git'
 $chocoPath = 'C:\ProgramData\chocolatey\choco.exe'
 $pythonPath = 'C:\Python310\python.exe'
 $defaultGitPath = 'C:\Program Files\Git\bin\git.exe'
