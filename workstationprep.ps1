@@ -808,93 +808,98 @@ New-ItemProperty `
     -Force | Out-Null
 
 # ------------------------------------------------------------
-# Create shortcuts for the Default User and current user
+# Create shared desktop shortcuts
 # ------------------------------------------------------------
 
-$targetPathPostUserInstall = Join-Path -Path $repoPath -ChildPath 'post-user-install.bat'
-$iconPathPostUserInstall = Join-Path -Path $repoPath -ChildPath 'installme.ico'
+$targetPathPostUserInstall = Join-Path `
+    -Path $repoPath `
+    -ChildPath 'post-user-install.bat'
 
-$targetPathChocoApps = Join-Path -Path $repoPath -ChildPath 'chocoapps.bat'
-$iconPathChocoApps = Join-Path -Path $repoPath -ChildPath 'installer.ico'
+$iconPathPostUserInstall = Join-Path `
+    -Path $repoPath `
+    -ChildPath 'installme.ico'
 
-$defaultUserDesktop = 'C:\Users\Default\Desktop'
-$currentUserDesktop = [Environment]::GetFolderPath(
-    [Environment+SpecialFolder]::Desktop
+$targetPathChocoApps = Join-Path `
+    -Path $repoPath `
+    -ChildPath 'chocoapps.bat'
+
+$iconPathChocoApps = Join-Path `
+    -Path $repoPath `
+    -ChildPath 'installer.ico'
+
+$sharedDesktop = [Environment]::GetFolderPath(
+    [Environment+SpecialFolder]::CommonDesktopDirectory
 )
 
-if (-not (Test-Path -LiteralPath $defaultUserDesktop)) {
-    New-Item -Path $defaultUserDesktop -ItemType Directory -Force | Out-Null
-}
-
-if (-not (Test-Path -LiteralPath $currentUserDesktop)) {
-    New-Item -Path $currentUserDesktop -ItemType Directory -Force | Out-Null
+if (-not (Test-Path -LiteralPath $sharedDesktop)) {
+    New-Item `
+        -Path $sharedDesktop `
+        -ItemType Directory `
+        -Force | Out-Null
 }
 
 $wshShell = New-Object -ComObject WScript.Shell
 
 try {
-    $shortcutPathDefaultPostUserInstall = Join-Path `
-        -Path $defaultUserDesktop `
+    $shortcutPathPostUserInstall = Join-Path `
+        -Path $sharedDesktop `
         -ChildPath 'Post User Install.lnk'
 
-    $shortcutDefaultPostUserInstall = $wshShell.CreateShortcut(
-        $shortcutPathDefaultPostUserInstall
+    $shortcutPostUserInstall = $wshShell.CreateShortcut(
+        $shortcutPathPostUserInstall
     )
 
-    $shortcutDefaultPostUserInstall.TargetPath = $targetPathPostUserInstall
-    $shortcutDefaultPostUserInstall.WorkingDirectory = $repoPath
-    $shortcutDefaultPostUserInstall.IconLocation = $iconPathPostUserInstall
-    $shortcutDefaultPostUserInstall.Description = 'Shortcut to Post-User-Install Script'
-    $shortcutDefaultPostUserInstall.Save()
+    $shortcutPostUserInstall.TargetPath = $targetPathPostUserInstall
+    $shortcutPostUserInstall.WorkingDirectory = $repoPath
+    $shortcutPostUserInstall.IconLocation = $iconPathPostUserInstall
+    $shortcutPostUserInstall.Description = 'Shortcut to Post-User-Install Script'
+    $shortcutPostUserInstall.Save()
 
-    $shortcutPathCurrentUserPostUserInstall = Join-Path `
-        -Path $currentUserDesktop `
-        -ChildPath 'Post User Install.lnk'
-
-    $shortcutCurrentUserPostUserInstall = $wshShell.CreateShortcut(
-        $shortcutPathCurrentUserPostUserInstall
-    )
-
-    $shortcutCurrentUserPostUserInstall.TargetPath = $targetPathPostUserInstall
-    $shortcutCurrentUserPostUserInstall.WorkingDirectory = $repoPath
-    $shortcutCurrentUserPostUserInstall.IconLocation = $iconPathPostUserInstall
-    $shortcutCurrentUserPostUserInstall.Description = 'Shortcut to Post-User-Install Script'
-    $shortcutCurrentUserPostUserInstall.Save()
-
-    $shortcutPathDefaultChocoApps = Join-Path `
-        -Path $defaultUserDesktop `
+    $shortcutPathChocoApps = Join-Path `
+        -Path $sharedDesktop `
         -ChildPath 'Choco Apps.lnk'
 
-    $shortcutDefaultChocoApps = $wshShell.CreateShortcut(
-        $shortcutPathDefaultChocoApps
+    $shortcutChocoApps = $wshShell.CreateShortcut(
+        $shortcutPathChocoApps
     )
 
-    $shortcutDefaultChocoApps.TargetPath = $targetPathChocoApps
-    $shortcutDefaultChocoApps.WorkingDirectory = $repoPath
-    $shortcutDefaultChocoApps.IconLocation = $iconPathChocoApps
-    $shortcutDefaultChocoApps.Description = 'Shortcut to Choco Apps Script'
-    $shortcutDefaultChocoApps.Save()
-
-    $shortcutPathCurrentUserChocoApps = Join-Path `
-        -Path $currentUserDesktop `
-        -ChildPath 'Choco Apps.lnk'
-
-    $shortcutCurrentUserChocoApps = $wshShell.CreateShortcut(
-        $shortcutPathCurrentUserChocoApps
-    )
-
-    $shortcutCurrentUserChocoApps.TargetPath = $targetPathChocoApps
-    $shortcutCurrentUserChocoApps.WorkingDirectory = $repoPath
-    $shortcutCurrentUserChocoApps.IconLocation = $iconPathChocoApps
-    $shortcutCurrentUserChocoApps.Description = 'Shortcut to Choco Apps Script'
-    $shortcutCurrentUserChocoApps.Save()
+    $shortcutChocoApps.TargetPath = $targetPathChocoApps
+    $shortcutChocoApps.WorkingDirectory = $repoPath
+    $shortcutChocoApps.IconLocation = $iconPathChocoApps
+    $shortcutChocoApps.Description = 'Shortcut to Choco Apps Script'
+    $shortcutChocoApps.Save()
 }
 finally {
-    if ($null -ne $wshShell) {
-        [void][Runtime.InteropServices.Marshal]::ReleaseComObject($wshShell)
+    if ($null -ne $shortcutPostUserInstall) {
+        [void][Runtime.InteropServices.Marshal]::ReleaseComObject(
+            $shortcutPostUserInstall
+        )
     }
 
-    Remove-Variable -Name wshShell -ErrorAction SilentlyContinue
+    if ($null -ne $shortcutChocoApps) {
+        [void][Runtime.InteropServices.Marshal]::ReleaseComObject(
+            $shortcutChocoApps
+        )
+    }
+
+    if ($null -ne $wshShell) {
+        [void][Runtime.InteropServices.Marshal]::ReleaseComObject(
+            $wshShell
+        )
+    }
+
+    Remove-Variable `
+        -Name shortcutPostUserInstall `
+        -ErrorAction SilentlyContinue
+
+    Remove-Variable `
+        -Name shortcutChocoApps `
+        -ErrorAction SilentlyContinue
+
+    Remove-Variable `
+        -Name wshShell `
+        -ErrorAction SilentlyContinue
+
     [GC]::Collect()
     [GC]::WaitForPendingFinalizers()
 }
