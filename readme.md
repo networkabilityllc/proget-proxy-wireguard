@@ -82,9 +82,9 @@ The `workstationprep.ps1` script performs the following tasks:
 
 7. Detects if the machine is a VMware virtual machine and installs the latest VMware Tools if applicable.
 
-8. Clones the repository into `C:\prep`, creating a folder called `NewWindowsScripts`.
+8. Clones the repository into `C:\prep`, creating a folder called `proget-proxy-wireguard`.
 
-9. Opens a Boxstarter shell and temporarily disables UAC (User Account Control).
+9. Connects the local session to the ProGet Proxy server via WireGuard profile
 
 10. Disables Bing Search, GameBar Tips, and enables Show Hidden Files and Folders with Show File Extensions.
 
