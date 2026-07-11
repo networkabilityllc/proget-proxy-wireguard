@@ -6,4 +6,4 @@ if %errorLevel% neq 0 (
     exit /b
 )
 
-start "" powershell.exe -ExecutionPolicy Bypass -File "C:\prep\NewWindowsScripts\configure.ps1"
+start "" powershell.exe -ExecutionPolicy Bypass -File "C:\prep\proget-proxy-wireguard\configure.ps1"
