@@ -74,7 +74,7 @@ The `workstationprep.ps1` script performs the following tasks:
 
 3. Prompts the installer if they want to Download SplashtopSOS to the `C:\Users\Default\Desktop` location, making it available on new user desktops.
 
-4. Checks for and installs Chocolatey and Boxstarter if they are not already installed.
+4. Checks for and installs Chocolatey via winget if it is not already installed.
 
 5. Checks for the existence of Python 3.10 and installs it if necessary.
 
