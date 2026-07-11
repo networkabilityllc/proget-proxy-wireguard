@@ -221,9 +221,9 @@ $proGetHost = '10.121.116.1'
 $proGetPort = 8624
 
 $gitDefaultPath = 'C:\Program Files\Git\bin\git.exe'
-$gitRepoUrl = 'https://github.com/networkabilityllc/NewWindowsScripts'
-$gitBranch = 'proget-proxy-wireguard'
-$repoPath = 'C:\prep\NewWindowsScripts'
+$gitRepoUrl = 'https://github.com/networkabilityllc/proget-proxy-wireguard.git'
+$gitBranch = 'main'
+$repoPath = 'C:\prep\proget-proxy-wireguard'
 
 $chocoWaitTimeoutSeconds = 60
 $chocoWaitIntervalSeconds = 5
