@@ -492,57 +492,6 @@ Set-RegistryValue `
     -Value '10000' `
     -Type String
 
-# ------------------------------------------------------------
-# Create the Default User Post User Install shortcut
-# ------------------------------------------------------------
-
-Write-BoxedText 'Creating the Post User Install shortcut'
-
-$defaultDesktopPath = 'C:\Users\Default\Desktop'
-$shortcutPath = Join-Path `
-    -Path $defaultDesktopPath `
-    -ChildPath 'Post User Install.lnk'
-
-$targetPath = Join-Path `
-    -Path $repoPath `
-    -ChildPath 'post-user-install.bat'
-
-$iconPath = Join-Path `
-    -Path $repoPath `
-    -ChildPath 'installme.ico'
-
-if (-not (Test-Path -LiteralPath $defaultDesktopPath)) {
-    New-Item `
-        -Path $defaultDesktopPath `
-        -ItemType Directory `
-        -Force | Out-Null
-}
-
-$wshShell = New-Object -ComObject WScript.Shell
-
-try {
-    $shortcut = $wshShell.CreateShortcut($shortcutPath)
-    $shortcut.TargetPath = $targetPath
-    $shortcut.WorkingDirectory = $repoPath
-    $shortcut.IconLocation = $iconPath
-    $shortcut.Description = 'Shortcut to Post-User-Install Script'
-    $shortcut.Save()
-}
-finally {
-    if ($null -ne $shortcut) {
-        [void][Runtime.InteropServices.Marshal]::ReleaseComObject($shortcut)
-    }
-
-    if ($null -ne $wshShell) {
-        [void][Runtime.InteropServices.Marshal]::ReleaseComObject($wshShell)
-    }
-
-    Remove-Variable shortcut -ErrorAction SilentlyContinue
-    Remove-Variable wshShell -ErrorAction SilentlyContinue
-
-    [GC]::Collect()
-    [GC]::WaitForPendingFinalizers()
-}
 
 # ------------------------------------------------------------
 # Add Command Prompt and PowerShell context-menu entries
@@ -585,7 +534,15 @@ else {
 }
 
 # ------------------------------------------------------------
-# Turn on Num Lock
+# Turn on Num Lock at startup
+#
+# This uses embedded C# to call the Win32 API and simulate a
+# Num Lock keypress. This is more reliable than attempting to
+# toggle Num Lock using PowerShell alone. The registry setting
+# below makes the change persist for future logons.
+#
+# Many thanks to the helpful tutorials at:
+# https://www.byteinthesky.com/powershell/
 # ------------------------------------------------------------
 
 Write-BoxedText 'Turning on Num Lock'
@@ -833,7 +790,7 @@ else {
 # ------------------------------------------------------------
 # Ask whether UAC should be re-enabled
 #
-# This replaces the Boxstarter Enable-UAC command.
+# Native PowerShell equivalent of Boxstarter's Disable-UAC command.
 # ------------------------------------------------------------
 
 Write-BoxedText 'UAC Configuration'
