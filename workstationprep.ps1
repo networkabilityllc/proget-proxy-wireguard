@@ -1,3 +1,5 @@
+#Requires -RunAsAdministrator
+
 # ------------------------------------------------------------
 # Create workstation prep working directory and navigate to it
 # ------------------------------------------------------------
@@ -225,9 +227,10 @@ They do not directly modify existing user profiles.
 # ------------------------------------------------------------
 
 function Apply-TaskbarTweaks {
-    $defaultUserHiveName = 'HKLM\Default'
+    $defaultUserHiveMount = 'DefaultUserHive'
+    $defaultUserHiveName = "HKLM\$defaultUserHiveMount"
     $defaultUserHivePath = 'C:\Users\Default\NTUSER.DAT'
-    $defaultUserRegistryPath = 'HKLM\Default\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced'
+    $defaultUserRegistryPath = "Registry::HKEY_LOCAL_MACHINE\$defaultUserHiveMount\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
     $hiveLoadedByScript = $false
 
     if (-not (Test-Path -LiteralPath $defaultUserHivePath)) {
@@ -236,7 +239,7 @@ function Apply-TaskbarTweaks {
     }
 
     try {
-        if (-not (Test-Path -LiteralPath 'Registry::HKEY_LOCAL_MACHINE\Default')) {
+        if (-not (Test-Path -LiteralPath "Registry::HKEY_LOCAL_MACHINE\$defaultUserHiveMount")) {
             & reg.exe load $defaultUserHiveName $defaultUserHivePath | Out-Null
 
             if ($LASTEXITCODE -ne 0) {
@@ -246,45 +249,41 @@ function Apply-TaskbarTweaks {
             $hiveLoadedByScript = $true
         }
 
-        & reg.exe add $defaultUserRegistryPath `
-            /v TaskbarDa `
-            /t REG_DWORD `
-            /d 0 `
-            /f | Out-Null
-
-        if ($LASTEXITCODE -ne 0) {
-            throw "Failed to set TaskbarDa. reg.exe exited with code $LASTEXITCODE."
+        if (-not (Test-Path -LiteralPath $defaultUserRegistryPath)) {
+            New-Item -Path $defaultUserRegistryPath -Force -ErrorAction Stop | Out-Null
         }
 
-        & reg.exe add $defaultUserRegistryPath `
-            /v TaskbarMn `
-            /t REG_DWORD `
-            /d 0 `
-            /f | Out-Null
+        New-ItemProperty `
+            -Path $defaultUserRegistryPath `
+            -Name 'TaskbarDa' `
+            -PropertyType DWord `
+            -Value 0 `
+            -Force `
+            -ErrorAction Stop | Out-Null
 
-        if ($LASTEXITCODE -ne 0) {
-            throw "Failed to set TaskbarMn. reg.exe exited with code $LASTEXITCODE."
-        }
+        New-ItemProperty `
+            -Path $defaultUserRegistryPath `
+            -Name 'TaskbarMn' `
+            -PropertyType DWord `
+            -Value 0 `
+            -Force `
+            -ErrorAction Stop | Out-Null
 
-        & reg.exe add $defaultUserRegistryPath `
-            /v TaskbarAl `
-            /t REG_DWORD `
-            /d 0 `
-            /f | Out-Null
+        New-ItemProperty `
+            -Path $defaultUserRegistryPath `
+            -Name 'TaskbarAl' `
+            -PropertyType DWord `
+            -Value 0 `
+            -Force `
+            -ErrorAction Stop | Out-Null
 
-        if ($LASTEXITCODE -ne 0) {
-            throw "Failed to set TaskbarAl. reg.exe exited with code $LASTEXITCODE."
-        }
-
-        & reg.exe add $defaultUserRegistryPath `
-            /v SearchboxTaskbarMode `
-            /t REG_DWORD `
-            /d 0 `
-            /f | Out-Null
-
-        if ($LASTEXITCODE -ne 0) {
-            throw "Failed to set SearchboxTaskbarMode. reg.exe exited with code $LASTEXITCODE."
-        }
+        New-ItemProperty `
+            -Path $defaultUserRegistryPath `
+            -Name 'SearchboxTaskbarMode' `
+            -PropertyType DWord `
+            -Value 0 `
+            -Force `
+            -ErrorAction Stop | Out-Null
 
         Write-Host '----------------------------------------------------' -ForegroundColor White -BackgroundColor Green
         Write-Host '      Taskbar Tweaks Applied for New Users          ' -ForegroundColor White -BackgroundColor Green
@@ -714,7 +713,9 @@ else {
 # Disable the Chat icon on the taskbar
 $registryPath = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced'
 
-New-Item -Path $registryPath -Force | Out-Null
+if (-not (Test-Path -LiteralPath $registryPath)) {
+    New-Item -Path $registryPath -Force | Out-Null
+}
 
 New-ItemProperty `
     -Path $registryPath `
@@ -726,7 +727,9 @@ New-ItemProperty `
 # Disable Windows consumer features
 $registryPath = 'HKLM:\Software\Policies\Microsoft\Windows\CloudContent'
 
-New-Item -Path $registryPath -Force | Out-Null
+if (-not (Test-Path -LiteralPath $registryPath)) {
+    New-Item -Path $registryPath -Force | Out-Null
+}
 
 New-ItemProperty `
     -Path $registryPath `
@@ -738,7 +741,9 @@ New-ItemProperty `
 # Disable suggested content and silently installed applications
 $registryPath = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager'
 
-New-Item -Path $registryPath -Force | Out-Null
+if (-not (Test-Path -LiteralPath $registryPath)) {
+    New-Item -Path $registryPath -Force | Out-Null
+}
 
 New-ItemProperty `
     -Path $registryPath `
@@ -767,7 +772,9 @@ New-ItemProperty `
 
 $registryPath = 'HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32'
 
-New-Item -Path $registryPath -Force | Out-Null
+if (-not (Test-Path -LiteralPath $registryPath)) {
+    New-Item -Path $registryPath -Force | Out-Null
+}
 Set-Item -Path $registryPath -Value ''
 
 # ------------------------------------------------------------
@@ -776,7 +783,9 @@ Set-Item -Path $registryPath -Value ''
 
 $registryPath = 'HKCU:\Control Panel\Mouse'
 
-New-Item -Path $registryPath -Force | Out-Null
+if (-not (Test-Path -LiteralPath $registryPath)) {
+    New-Item -Path $registryPath -Force | Out-Null
+}
 
 New-ItemProperty `
     -Path $registryPath `
@@ -791,7 +800,9 @@ New-ItemProperty `
 
 $registryPath = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced'
 
-New-Item -Path $registryPath -Force | Out-Null
+if (-not (Test-Path -LiteralPath $registryPath)) {
+    New-Item -Path $registryPath -Force | Out-Null
+}
 
 New-ItemProperty `
     -Path $registryPath `
