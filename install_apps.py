@@ -108,6 +108,16 @@ software_items = [
 ]
 
 choco_path = r'c:\ProgramData\chocolatey\choco.exe'  # Chocolatey path
+powershell_path = r'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe'
+
+# Chris Titus Tech WinUtil presets.
+# The valid preset names are Advanced, Standard, and Minimal.
+ctt_presets = {
+    "Advanced": "Advanced",
+    "Standard": "Standard",
+    "Minimal": "Minimal"
+}
+
 
 # Function to refresh checkboxes in both tabs
 def refresh_checkboxes():
@@ -174,6 +184,46 @@ def install_package(package_name, params):
         subprocess.run([choco_path, "install", package_name] + params)
     except Exception as e:
         print(f"Error installing {package_name}: {e}")
+
+# Function to run a Chris Titus Tech WinUtil preset
+def run_ctt_preset():
+    preset = ctt_preset_var.get()
+
+    if preset not in ctt_presets:
+        ctt_status_label.configure(text="Select a valid CTT preset.")
+        return
+
+    ctt_status_label.configure(text=f"Running CTT {preset} preset...")
+    root.update_idletasks()
+
+    powershell_command = (
+        "$winUtilScript = Invoke-RestMethod -Uri 'https://christitus.com/win'; "
+        f"& ([ScriptBlock]::Create($winUtilScript)) -Preset '{preset}'"
+    )
+
+    try:
+        result = subprocess.run(
+            [
+                powershell_path,
+                "-NoProfile",
+                "-ExecutionPolicy",
+                "Bypass",
+                "-Command",
+                powershell_command
+            ],
+            check=False
+        )
+
+        if result.returncode == 0:
+            ctt_status_label.configure(
+                text=f"CTT {preset} preset completed successfully."
+            )
+        else:
+            ctt_status_label.configure(
+                text=f"CTT {preset} preset exited with code {result.returncode}."
+            )
+    except Exception as e:
+        ctt_status_label.configure(text=f"Error running CTT preset: {e}")
         
 # Function to check and update text color and checkbox state based on installation status for the install tab
 def check_and_update_text_color_and_checkbox_state_install(checkbox_list):
@@ -221,13 +271,15 @@ root.title("NetworkAbility Software Installer")
 # Create a Tab Control widget
 tabControl = ttk.Notebook(root)
 
-# Create two tabs (tab1 for installation, tab2 for uninstallation)
+# Create tabs for installation, uninstallation, and CTT presets
 tab1 = ttk.Frame(tabControl)
 tab2 = ttk.Frame(tabControl)
+tab3 = ttk.Frame(tabControl)
 
 # Add the tabs to the Tab Control widget with specified text labels
 tabControl.add(tab1, text='Install')
 tabControl.add(tab2, text='Uninstall')
+tabControl.add(tab3, text='CTT Presets')
 
 # Make the Tab Control widget expand to fill the available space in the main window
 tabControl.pack(expand=1, fill="both")
@@ -238,6 +290,12 @@ message_label1.pack(padx=10, pady=10)
 
 message_label2 = tk.Label(tab2, text="Applications that are grayed out were not installed by Chocolatey and cannot be uninstalled")
 message_label2.pack(padx=10, pady=10)
+
+message_label3 = tk.Label(
+    tab3,
+    text="Select one Chris Titus Tech WinUtil preset. These presets run without further interaction."
+)
+message_label3.pack(padx=10, pady=10)
 
 # Create a frame for the checkboxes in each tab
 checkbox_frame1 = tk.Frame(tab1)
@@ -282,6 +340,31 @@ install_button1.pack(pady=10)
 install_button2 = tk.Button(tab2, text="Uninstall Selected", command=lambda: install_or_uninstall(tab2))
 install_button2.pack(pady=10)
 
+# Create mutually exclusive CTT preset choices
+ctt_preset_var = tk.StringVar(value="Standard")
+
+ctt_preset_frame = tk.Frame(tab3)
+ctt_preset_frame.pack(padx=10, pady=10)
+
+for preset_name in ctt_presets:
+    preset_button = tk.Radiobutton(
+        ctt_preset_frame,
+        text=f"CTT {preset_name}",
+        variable=ctt_preset_var,
+        value=preset_name
+    )
+    preset_button.pack(anchor="w", padx=5, pady=5)
+
+ctt_run_button = tk.Button(
+    tab3,
+    text="Run Selected CTT Preset",
+    command=run_ctt_preset
+)
+ctt_run_button.pack(pady=10)
+
+ctt_status_label = tk.Label(tab3, text="")
+ctt_status_label.pack(padx=10, pady=10)
+
 # Function to exit the application
 def exit_app():
     root.destroy()
@@ -293,6 +376,9 @@ exit_button1.pack(pady=10)
 
 exit_button2 = tk.Button(tab2, text="Exit", command=exit_app)
 exit_button2.pack(pady=10)
+
+exit_button3 = tk.Button(tab3, text="Exit", command=exit_app)
+exit_button3.pack(pady=10)
 
 # Start the main event loop
 root.mainloop()
