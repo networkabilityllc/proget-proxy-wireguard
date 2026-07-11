@@ -227,7 +227,7 @@ They do not directly modify existing user profiles.
 function Apply-TaskbarTweaks {
     $defaultUserHiveName = 'HKLM\Default'
     $defaultUserHivePath = 'C:\Users\Default\NTUSER.DAT'
-    $defaultUserRegistryPath = 'HKLM:\Default\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced'
+    $defaultUserRegistryPath = 'HKLM\Default\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced'
     $hiveLoadedByScript = $false
 
     if (-not (Test-Path -LiteralPath $defaultUserHivePath)) {
@@ -236,7 +236,7 @@ function Apply-TaskbarTweaks {
     }
 
     try {
-        if (-not (Test-Path -LiteralPath 'HKLM:\Default')) {
+        if (-not (Test-Path -LiteralPath 'Registry::HKEY_LOCAL_MACHINE\Default')) {
             & reg.exe load $defaultUserHiveName $defaultUserHivePath | Out-Null
 
             if ($LASTEXITCODE -ne 0) {
@@ -246,35 +246,45 @@ function Apply-TaskbarTweaks {
             $hiveLoadedByScript = $true
         }
 
-        New-Item -Path $defaultUserRegistryPath -Force | Out-Null
+        & reg.exe add $defaultUserRegistryPath `
+            /v TaskbarDa `
+            /t REG_DWORD `
+            /d 0 `
+            /f | Out-Null
 
-        New-ItemProperty `
-            -Path $defaultUserRegistryPath `
-            -Name 'TaskbarDa' `
-            -PropertyType DWord `
-            -Value 0 `
-            -Force | Out-Null
+        if ($LASTEXITCODE -ne 0) {
+            throw "Failed to set TaskbarDa. reg.exe exited with code $LASTEXITCODE."
+        }
 
-        New-ItemProperty `
-            -Path $defaultUserRegistryPath `
-            -Name 'TaskbarMn' `
-            -PropertyType DWord `
-            -Value 0 `
-            -Force | Out-Null
+        & reg.exe add $defaultUserRegistryPath `
+            /v TaskbarMn `
+            /t REG_DWORD `
+            /d 0 `
+            /f | Out-Null
 
-        New-ItemProperty `
-            -Path $defaultUserRegistryPath `
-            -Name 'TaskbarAl' `
-            -PropertyType DWord `
-            -Value 0 `
-            -Force | Out-Null
+        if ($LASTEXITCODE -ne 0) {
+            throw "Failed to set TaskbarMn. reg.exe exited with code $LASTEXITCODE."
+        }
 
-        New-ItemProperty `
-            -Path $defaultUserRegistryPath `
-            -Name 'SearchboxTaskbarMode' `
-            -PropertyType DWord `
-            -Value 0 `
-            -Force | Out-Null
+        & reg.exe add $defaultUserRegistryPath `
+            /v TaskbarAl `
+            /t REG_DWORD `
+            /d 0 `
+            /f | Out-Null
+
+        if ($LASTEXITCODE -ne 0) {
+            throw "Failed to set TaskbarAl. reg.exe exited with code $LASTEXITCODE."
+        }
+
+        & reg.exe add $defaultUserRegistryPath `
+            /v SearchboxTaskbarMode `
+            /t REG_DWORD `
+            /d 0 `
+            /f | Out-Null
+
+        if ($LASTEXITCODE -ne 0) {
+            throw "Failed to set SearchboxTaskbarMode. reg.exe exited with code $LASTEXITCODE."
+        }
 
         Write-Host '----------------------------------------------------' -ForegroundColor White -BackgroundColor Green
         Write-Host '      Taskbar Tweaks Applied for New Users          ' -ForegroundColor White -BackgroundColor Green
