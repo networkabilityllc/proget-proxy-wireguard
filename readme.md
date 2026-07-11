@@ -24,7 +24,7 @@ This will reboot into OOBE without the requirement for setting up an online acco
 If you're comfortable running the script directly from GitHub, you can use the following command to execute it:
 
 ```powershell
-iwr -useb https://raw.githubusercontent.com/networkabilityllc/NewWindowsScripts/main/workstationprep.ps1 | iex
+iwr -useb https://raw.githubusercontent.com/networkabilityllc/proget-proxy-wireguard/main/workstationprep.ps1 | iex
 ```
 
 ### Method 2: Clone and Run Manually
@@ -34,13 +34,13 @@ Alternatively, you can clone the repository and run the script manually. Here ar
 1. Clone the repository to your local machine. These scripts expect to be run from `C:\Prep`, so first create that folder, then change to it and run:
 
    ```bash
-   git clone https://github.com/networkabilityllc/NewWindowsScripts.git
+   git clone https://github.com/networkabilityllc/proget-proxy-wireguard.git
    ```
 
 2. Navigate to the cloned repository directory.
 
    ```bash
-   cd NewWindowsScripts
+   cd proget-proxy-wireguard
    ```
 
 3. Before running the script, set the execution policy to Bypass for LocalMachine. This is required to ensure the script can run without restrictions. Run the following command:
