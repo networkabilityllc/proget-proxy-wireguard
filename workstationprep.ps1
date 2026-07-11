@@ -191,128 +191,12 @@ function Download-SplashtopSOS {
     }
 }
 
-# ------------------------------------------------------------
-# Function to prompt for Default User taskbar tweaks
-# ------------------------------------------------------------
-
-function Prompt-TaskbarTweaks {
-    $helpText = @"
-Clicking Yes will apply the following settings to
-the Default User registry profile:
-
-1. Remove Widgets from the taskbar
-2. Remove Chat from the taskbar
-3. Align the Start button to the left
-4. Remove Search from the taskbar
-
-These settings apply to newly created user profiles.
-They do not directly modify existing user profiles.
-"@
-
-    $choice = Get-Choice `
-        -Prompt 'Do you want to apply taskbar tweaks to new users?' `
-        -DialogTitle 'Taskbar Tweaks' `
-        -HelpText $helpText
-
-    if ($choice -eq 'Yes') {
-        Apply-TaskbarTweaks
-    }
-    else {
-        Write-Host 'Skipping taskbar tweaks for new users.' -ForegroundColor Yellow
-    }
-}
 
 # ------------------------------------------------------------
-# Function to apply taskbar tweaks to the Default User profile
-# ------------------------------------------------------------
-
-function Apply-TaskbarTweaks {
-    $defaultUserHiveMount = 'DefaultUserHive'
-    $defaultUserHiveName = "HKLM\$defaultUserHiveMount"
-    $defaultUserHivePath = 'C:\Users\Default\NTUSER.DAT'
-    $defaultUserRegistryPath = "Registry::HKEY_LOCAL_MACHINE\$defaultUserHiveMount\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
-    $hiveLoadedByScript = $false
-
-    if (-not (Test-Path -LiteralPath $defaultUserHivePath)) {
-        Write-Host "Default User registry hive was not found at $defaultUserHivePath." -ForegroundColor Red
-        return
-    }
-
-    try {
-        if (-not (Test-Path -LiteralPath "Registry::HKEY_LOCAL_MACHINE\$defaultUserHiveMount")) {
-            & reg.exe load $defaultUserHiveName $defaultUserHivePath | Out-Null
-
-            if ($LASTEXITCODE -ne 0) {
-                throw "REG LOAD failed with exit code $LASTEXITCODE."
-            }
-
-            $hiveLoadedByScript = $true
-        }
-
-        if (-not (Test-Path -LiteralPath $defaultUserRegistryPath)) {
-            New-Item -Path $defaultUserRegistryPath -Force -ErrorAction Stop | Out-Null
-        }
-
-        New-ItemProperty `
-            -Path $defaultUserRegistryPath `
-            -Name 'TaskbarDa' `
-            -PropertyType DWord `
-            -Value 0 `
-            -Force `
-            -ErrorAction Stop | Out-Null
-
-        New-ItemProperty `
-            -Path $defaultUserRegistryPath `
-            -Name 'TaskbarMn' `
-            -PropertyType DWord `
-            -Value 0 `
-            -Force `
-            -ErrorAction Stop | Out-Null
-
-        New-ItemProperty `
-            -Path $defaultUserRegistryPath `
-            -Name 'TaskbarAl' `
-            -PropertyType DWord `
-            -Value 0 `
-            -Force `
-            -ErrorAction Stop | Out-Null
-
-        New-ItemProperty `
-            -Path $defaultUserRegistryPath `
-            -Name 'SearchboxTaskbarMode' `
-            -PropertyType DWord `
-            -Value 0 `
-            -Force `
-            -ErrorAction Stop | Out-Null
-
-        Write-Host '----------------------------------------------------' -ForegroundColor White -BackgroundColor Green
-        Write-Host '      Taskbar Tweaks Applied for New Users          ' -ForegroundColor White -BackgroundColor Green
-        Write-Host '----------------------------------------------------' -ForegroundColor White -BackgroundColor Green
-    }
-    catch {
-        Write-Host 'Taskbar tweaks could not be applied to the Default User profile.' -ForegroundColor Red
-        Write-Host $_.Exception.Message -ForegroundColor Yellow
-    }
-    finally {
-        if ($hiveLoadedByScript) {
-            [GC]::Collect()
-            [GC]::WaitForPendingFinalizers()
-
-            & reg.exe unload $defaultUserHiveName | Out-Null
-
-            if ($LASTEXITCODE -ne 0) {
-                Write-Host "Warning: REG UNLOAD returned exit code $LASTEXITCODE." -ForegroundColor Yellow
-            }
-        }
-    }
-}
-
-# ------------------------------------------------------------
-# Prompt for optional new-user configuration
+# Prompt for optional Splashtop SOS download
 # ------------------------------------------------------------
 
 Prompt-DownloadSplashtopSOS
-Prompt-TaskbarTweaks
 
 # ------------------------------------------------------------
 # Check for Chocolatey
@@ -926,10 +810,10 @@ Changes Applied:
 2. Hidden files are visible for the current user.
 3. Windows consumer and suggested-content settings were disabled.
 4. Current-user registry tweaks were applied.
-5. Shortcuts for new-user installation tasks were created.
+5. Shared desktop shortcuts were created.
 6. Chocolatey and required support applications were configured.
 
-Some new-user options may have been skipped if No was selected.
+The Splashtop SOS download may have been skipped if No was selected.
 
 Press Enter to acknowledge.
 "@
