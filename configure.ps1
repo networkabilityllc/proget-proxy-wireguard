@@ -326,7 +326,7 @@ Set-RegistryValue `
 Set-RegistryValue `
     -Path $explorerAdvancedPath `
     -Name 'ShowSuperHidden' `
-    -Value 1 `
+    -Value 0 `
     -Type DWord
 
 # Show file extensions
