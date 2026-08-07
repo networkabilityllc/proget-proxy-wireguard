@@ -845,4 +845,37 @@ else {
 
 Write-BoxedText 'Current-user configuration is complete'
 
+# ------------------------------------------------------------
+# Display mandatory finalization reminder
+# ------------------------------------------------------------
+
+$finalizeReminderVbs = Join-Path `
+    -Path $env:TEMP `
+    -ChildPath 'NetworkAbility-Finalize-Reminder.vbs'
+
+@'
+Option Explicit
+
+MsgBox _
+    "IMPORTANT!" & vbCrLf & vbCrLf & _
+    "Before closing the ticket or leaving the site:" & vbCrLf & vbCrLf & _
+    "RUN FINALIZE.BAT AS ADMINISTRATOR" & vbCrLf & vbCrLf & _
+    "Do not leave the workstation unfinished.", _
+    vbOKOnly + vbExclamation + vbSystemModal + vbMsgBoxSetForeground, _
+    "NetworkAbility - Finalization Required"
+'@ | Set-Content `
+    -LiteralPath $finalizeReminderVbs `
+    -Encoding ASCII `
+    -Force
+
+Start-Process `
+    -FilePath "$env:SystemRoot\System32\wscript.exe" `
+    -ArgumentList "`"$finalizeReminderVbs`"" `
+    -Wait
+
+Remove-Item `
+    -LiteralPath $finalizeReminderVbs `
+    -Force `
+    -ErrorAction SilentlyContinue
+
 Read-Host 'Press Enter to close'
