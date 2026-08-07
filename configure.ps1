@@ -375,12 +375,13 @@ Set-RegistryValue `
     -Value 0 `
     -Type DWord
 
+###### Removed for now: TaskbarDa is protected on Windows 11 25H2 ######
 # Remove Widgets
-Set-RegistryValue `
-    -Path $explorerAdvancedPath `
-    -Name 'TaskbarDa' `
-    -Value 0 `
-    -Type DWord
+# Set-RegistryValue `
+#    -Path $explorerAdvancedPath `
+#    -Name 'TaskbarDa' `
+#    -Value 0 `
+#    -Type DWord
 
 # Align the Start button to the left
 Set-RegistryValue `
