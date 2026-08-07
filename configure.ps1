@@ -383,6 +383,16 @@ Set-RegistryValue `
 #    -Value 0 `
 #    -Type DWord
 
+####### Added to Replace the TaskbarDA Blocked Functionality #######
+# Disable Widgets
+$widgetsPolicyPath = 'HKLM:\SOFTWARE\Policies\Microsoft\Dsh'
+
+Set-RegistryValue `
+    -Path $widgetsPolicyPath `
+    -Name 'AllowNewsAndInterests' `
+    -Value 0 `
+    -Type DWord
+
 # Align the Start button to the left
 Set-RegistryValue `
     -Path $explorerAdvancedPath `
