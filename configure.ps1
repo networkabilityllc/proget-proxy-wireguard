@@ -64,6 +64,22 @@ function Set-RegistryValue {
         New-Item -Path $Path -Force | Out-Null
     }
 
+    Write-Host "=== Registry write diagnostic ==="
+    Write-Host "User: $(whoami)"
+    Write-Host "Identity: $([System.Security.Principal.WindowsIdentity]::GetCurrent().Name)"
+    Write-Host "Elevated: $([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)"
+    Write-Host "HKCU: $((Get-Item HKCU:\).Name)"
+    Write-Host "Target: $Path"
+    Write-Host "Name: $Name"
+    Write-Host "Value: $Value"
+    Write-Host "Type: $Type"
+
+    if (Test-Path -LiteralPath $Path) {
+        Get-Acl -Path $Path | Format-List Owner, AccessToString
+    }
+
+    Write-Host "==============================="
+
     New-ItemProperty `
         -Path $Path `
         -Name $Name `
@@ -93,7 +109,6 @@ function Set-RegistryDefaultValue {
 
     Set-Item -LiteralPath $Path -Value $Value
 }
-
 # ------------------------------------------------------------
 # Create the working directory
 # ------------------------------------------------------------
