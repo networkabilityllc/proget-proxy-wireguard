@@ -9,7 +9,7 @@ if %errorLevel% neq 0 (
 )
 
 :: Change directory to c:\prep\NewWindowsScripts
-cd /d "C:\prep\NewWindowsScripts"
+cd /d "C:\prep\proget-proxy-wireguard"
 
 :: Execute git pull
 git pull
