@@ -15,7 +15,7 @@ software_mapping = {
     "duf": "Disk Usage/Free Utility",
     "supportassist": "Dell SupportAssist",
     "ditto": "Ditto Clipboard Manager",
-    "dotnet": ".NET Framework",
+    "dotnet-all": ".NET (1.1 Might be broken)",
     "dotnetfx": ".NET Framework 4.8",
     "etcher": "balenaEtcher",
     "everything": "Everything File Search",
