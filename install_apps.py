@@ -228,6 +228,28 @@ def run_ctt_preset():
             )
     except Exception as e:
         ctt_status_label.configure(text=f"Error running CTT preset: {e}")
+
+# Function to launch the interactive Chris Titus Tech WinUtil
+def launch_ctt_winutil():
+    ctt_status_label.configure(text="Launching CTT WinUtil...")
+    root.update_idletasks()
+
+    try:
+        subprocess.Popen(
+            [
+                powershell_path,
+                "-NoProfile",
+                "-ExecutionPolicy",
+                "Bypass",
+                "-NoExit",
+                "-Command",
+                "irm https://christitus.com/win | iex"
+            ],
+            creationflags=subprocess.CREATE_NEW_CONSOLE
+        )
+        ctt_status_label.configure(text="CTT WinUtil launched.")
+    except Exception as e:
+        ctt_status_label.configure(text=f"Error launching CTT WinUtil: {e}")
         
 # Function to check and update text color and checkbox state based on installation status for the install tab
 def check_and_update_text_color_and_checkbox_state_install(checkbox_list):
@@ -365,6 +387,13 @@ ctt_run_button = tk.Button(
     command=run_ctt_preset
 )
 ctt_run_button.pack(pady=10)
+
+ctt_winutil_button = tk.Button(
+    tab3,
+    text="Launch Interactive CTT WinUtil",
+    command=launch_ctt_winutil
+)
+ctt_winutil_button.pack(pady=10)
 
 ctt_status_label = tk.Label(tab3, text="")
 ctt_status_label.pack(padx=10, pady=10)
