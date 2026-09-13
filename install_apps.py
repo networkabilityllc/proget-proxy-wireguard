@@ -70,7 +70,7 @@ software_items = [
     ("etcher", ["--force"]),
     ("supportassist", ["--force"]),
     ("ditto", ["--force"]),
-    ("dotnet-all"),
+    ("dotnet-all", ["--force"]),
     ("dotnetfx", ["--force"]),
     ("everything", ["--force"]),
     ("firefox", ["--force"]),
