@@ -42,6 +42,7 @@ software_mapping = {
     "openssl": "OpenSSL",
     "partitionwizard": "MiniTool Partition Wizard",
     "powershell-core": "PowerShell 7.x",
+    "firefoxpwa": "Firefox PWA",
     "powertoys": "PowerToys",
     "QEMU Guest Agent": "QEMU Guest Agent",
     "sed": "Sed",
@@ -74,6 +75,7 @@ software_items = [
     ("dotnetfx", ["--force"]),
     ("everything", ["--force"]),
     ("firefox", ["--force"]),
+    
     ("flow-launcher", ["--force"]),
     ("gawk", ["--force"]),
     ("googlechrome", ["--force"]),
