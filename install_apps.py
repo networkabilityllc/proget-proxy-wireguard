@@ -75,7 +75,7 @@ software_items = [
     ("dotnetfx", ["--force"]),
     ("everything", ["--force"]),
     ("firefox", ["--force"]),
-    
+    ("firefoxpwa", ["--force"]),
     ("flow-launcher", ["--force"]),
     ("gawk", ["--force"]),
     ("googlechrome", ["--force"]),
